@@ -402,13 +402,15 @@
         <div class="user_options-forms" id="user_options-forms">
           <div class="user_forms-login">
             <h2 class="forms_title">Login</h2>
-            <form class="forms_form">
+            {% comment %} Login form  {% endcomment %}
+            <form class="forms_form" action="/login" method='post'>
+              {% csrf_token %}
               <fieldset class="forms_fieldset">
                 <div class="forms_field">
-                  <input type="email" placeholder="Email" class="forms_field-input" required autofocus />
+                  <input type="email" placeholder="Email" class="forms_field-input" required autofocus name="email"/>
                 </div>
                 <div class="forms_field">
-                  <input type="password" placeholder="Password" class="forms_field-input" required />
+                  <input type="password" placeholder="Password" class="forms_field-input" required name="password"/>
                 </div>
               </fieldset>
               <div class="forms_buttons">
@@ -416,6 +418,7 @@
                 <input type="submit" value="Log In" class="forms_buttons-action" />
               </div>
             </form>
+
           </div>
           <div class="user_forms-signup">
             <h2 class="forms_title">Sign Up</h2>
