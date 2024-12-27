@@ -1,6 +1,7 @@
 from django.shortcuts import render, HttpResponse, redirect
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
+from .models import Products
 
 # Create your views here.
 def index(request):
@@ -11,7 +12,9 @@ def base(request):
 
 
 def home(request):
-    return render(request, 'index.html', {})
+    products = Products.objects.all()
+    print("Priducts=", products)
+    return render(request, 'index.html', {"products":products})
 
 def auth(request):
     return render(request, 'auth.html', {})
@@ -47,5 +50,9 @@ def signin(request):
             print("Invalid Credentials!!")
             return redirect('/auth')
         
+
+def product_details(request, id):
+    product = Products.objects.get(id = id)
+    return render(request, 'product-detail.html', {"product":product})
 
 
