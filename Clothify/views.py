@@ -1,7 +1,7 @@
 from django.shortcuts import render, HttpResponse, redirect
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
-from .models import Products
+from .models import Products, Category
 
 # Create your views here.
 def index(request):
@@ -55,4 +55,7 @@ def product_details(request, id):
     product = Products.objects.get(id = id)
     return render(request, 'product-detail.html', {"product":product})
 
-
+def product_list(request):
+    products = Products.objects.all()
+    categories = Category.objects.all()
+    return render(request, 'product-list.html', {'products': products, 'categories':categories})
