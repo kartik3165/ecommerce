@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 # Create your models here.
 
@@ -24,6 +25,10 @@ class Products(models.Model):
         return self.name
     
 
+class Cart(models.Model):
+    user = models.ForeignKey(User, related_name='customer', on_delete=models.CASCADE)
+    product = models.ManyToManyField(to=Products, related_name='cart_products', blank=True)
 
-    
+    def __str__(self):
+        return self.user.first_name
     
