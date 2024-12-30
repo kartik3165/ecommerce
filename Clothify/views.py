@@ -1,7 +1,7 @@
 from django.shortcuts import render, HttpResponse, redirect
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
-from .models import Products, Category, Cart
+from .models import Products, Category, Cart, Order
 
 # Create your views here.
 def home(request):
@@ -64,7 +64,16 @@ def category_product_list(request, category):
 
 
 def cart(request):
-    return render(request, 'cart.html', {})
+    if request.user.is_authenticated:
+        cart = Cart.objects.get(user = request.user)
+        cart_items = cart.product.all()
+        grand_sum = 0 
+        for item in cart_items:
+            grand_sum+=item.price
+        return render(request, 'cart.html', {"cart_items":cart_items, "grand_sum":grand_sum})
+    else:
+        print('User not logged in')
+        return redirect('/auth')
 
 def add_to_cart(request, product_id):
     if request.user.is_authenticated:
@@ -95,3 +104,53 @@ def add_to_cart(request, product_id):
         print("User is not logged in")
 
     return redirect('/')
+
+def delete_cart_item(request, product_id):
+    cart = Cart.objects.get(user= request.user)
+    cart.product.remove(product_id)
+    print("Item deleted from Cart!")
+    return redirect('/cart')
+
+from uuid import uuid4
+def checkout(request):
+    cart = Cart.objects.get(user = request.user)
+    cart_items = cart.product.all()
+    grand_sum = 0 
+    for item in cart_items:
+        grand_sum+=item.price
+    
+    # if method is post i.e. Checkout
+    if request.method =="POST":
+        # create order
+        order_id = str(uuid4())
+        address = request.POST['address']
+        mobile_no = request.POST['mobile_no']
+
+        for item in cart_items:
+            Order.objects.create(order_id=order_id,user= request.user, product = item, address =address, mobile_no=mobile_no)
+            # remove ordered product from cart
+            cart.product.remove(item)
+            
+        print("Order Placed!!")
+        return redirect('/')
+
+
+    return render(request, 'checkout.html', {'cart_items':cart_items, 'grand_sum':grand_sum})
+
+
+def orders(request):
+    orders = Order.objects.filter(user= request.user).order_by('order_id')
+
+    order_list=[]
+
+    temp_order_id = ''
+    total_order_price=0
+    for order in orders:
+        if temp_order_id != order.order_id:
+            temp_order_id = order.order_id
+            order_list.append({"order_id":order.order_id, 'order_price':total_order_price, 'status':order.status})
+        else:
+            total_order_price+= order.product.price
+            order_list[-1] = {"order_id":order.order_id, 'order_price':total_order_price, 'status':order.status}
+
+    return render(request, 'orders.html', {"order_list":order_list, "orders":orders})
