@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% load static %}
+        
+   {% block mainblock %}
+        <!-- Breadcrumb Start -->
+        <div class="breadcrumb-wrap">
+            <div class="container">
+                <ul class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="#">Home</a></li>
+                    <li class="breadcrumb-item"><a href="#">Products</a></li>
+                    <li class="breadcrumb-item active">Orders</li>
+                </ul>
+            </div>
+        </div>
+        <!-- Breadcrumb End -->
+        
+        
+        <!-- Cart Start -->
+        <div class="cart-page">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead class="thead-dark">
+                                    <tr>
+                                        <th>Order Id</th>
+                                        <th>Orders Items</th>
+                                        <th>Order Price</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="align-middle">
+                                    {% for order in order_list %}
+                                    <tr>
+                                        <td>{{order.order_id}}</td>
+                                        <td>
+                                            <ol>
+                                                {% for ord in orders %}
+                                                {% if ord.order_id == order.order_id %}
+                                                    <li>{{ord.product.name}}</li>
+                                                {% endif %}
+                                                {% endfor %}
+                                            </ol>
+                                        </td>
+                                        <td>₹ {{order.order_price}}</td>
+                                        <td>{{order.status}}</td>    
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+        <!-- Cart End -->
+
+{% endblock mainblock %}     
